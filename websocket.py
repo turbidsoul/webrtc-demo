@@ -128,16 +128,17 @@ class WebSocket(Protocol):
 
     def parse_recv_data(self, msg):
         raw_str = ''
-        print "msg_length", len(msg)
+        print "data length:", len(msg)
+        print "msg[0]:", ord(msg[0])
+        print "msg[1]:", ord(msg[1])
         if self.sockets[self]['new_version']:
             code_length = ord(msg[1]) & 127
-            print "code_length:" + str(ord(msg[1]))
             if code_length == 126:
                 masks = msg[4:8]
                 data = msg[8:]
             elif code_length == 127:
-                masks = msg[12:16]
-                data = msg[16:]
+                masks = msg[10:14]
+                data = msg[14:]
             else:
                 masks = msg[2:6]
                 data = msg[6:]
