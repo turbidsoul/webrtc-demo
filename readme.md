@@ -7,4 +7,11 @@
 
 WebSocket服务端是我在网上看到的一篇文章，使用作者的源代码，简单的修改之后得到的.
 
-*参考blog:[用Python实现一个简单的WebSocket服务器](http://blog.mycolorway.com/2011/11/22/a-minimal-python-websocket-server/)*
+### 参考文档
+* [用Python实现一个简单的WebSocket服务器](http://blog.mycolorway.com/2011/11/22/a-minimal-python-websocket-server/)
+* [Hello Chrome, it’s Firefox calling!](https://hacks.mozilla.org/2013/02/hello-chrome-its-firefox-calling/)
+* [WebSocket草案10文本数据解析实现](http://fdream.net/blog/article/759.aspx)
+* [基于Websocket草案10协议的升级及基于Netty的握手实现](http://blog.csdn.net/fenglibing/article/details/6852497)
+* [Java+WebSocket+WebRTC实现浏览器视频通话](http://blog.csdn.net/leecho571/article/details/8146525)
+* [WebRTC现状及实现概要](http://h5dev.uc.cn/article-22-1.html)
+* [Getting Started with WebRTC](http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-sans)
