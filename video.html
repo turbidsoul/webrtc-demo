@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+	<title>Web RTC</title>
+  <script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="adapter.js"></script>
+  <script type="text/javascript" src="websocket.js"></script>
+  <style type="text/css">
+    video {
+      border:5px solid #33539c;
+      width:480px;
+      height:360px;
+    }
+  </style>
+</head>
+<body>
+  Name:<input type="text" name="" id="user"><br/>
+  <video autoplay='true' id="localvideo"></video>
+  <video autoplay='true' id="remotevideo"></video>
+  <br/>
+  <!--
+  Message:<input type="text" name="" id="msg"><br/>
+  -->
+  Remote Name:<input type="text" name="" id="remotename">
+  <button onClick='connection("user")'>连接</button>
+  <button onClick='requestCall()'>请求视频</button>
+  <br/>
+  <input type="text" name="" id="msg">
+  <button onClick="send_msg()">发送消息</button>
+</body>
+</html>
