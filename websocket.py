@@ -1,12 +1,16 @@
-#coding:utf8
+# coding:utf8
 
 from twisted.internet import reactor
 from twisted.internet.protocol import Factory, Protocol
 
-import hashlib, struct, base64, json
+import hashlib
+import struct
+import base64
+import json
 
 
 connections = {}
+
 
 class WebSocket(Protocol):
 
@@ -15,7 +19,7 @@ class WebSocket(Protocol):
         self.user = {}
 
     def connectionMade(self):
-        if not self.sockets.has_key(self):
+        if self not in self.sockets:
             self.sockets[self] = {}
 
     def dataReceived(self, msg):
@@ -42,19 +46,19 @@ class WebSocket(Protocol):
                 # 当接收到第一个answer，发送给第二个offer
                 if data['type'] == 'offer':
                     to = data['to']
-                    if not connections.has_key(to):
+                    if to not in connections:
                         error = {
-                            'type':'error',
-                            'username':'WebSocket Server',
-                            'message':'指定用户不存在'
+                            'type': 'error',
+                            'username': 'WebSocket Server',
+                            'message': '指定用户不存在'
                         }
                         self.send_data(json.dumps(error))
                         return
                     offer = {
                         'from': data['from'],
                         'to': data['to'],
-                        'type':'offer',
-                        'offer':data['offer']
+                        'type': 'offer',
+                        'offer': data['offer']
                     }
                     print data['from'], "send offer to", data['to']
                     connections[data['to']].send_data(json.dumps(offer))
@@ -62,8 +66,8 @@ class WebSocket(Protocol):
                     answer = {
                         'from': data['from'],
                         'to': data['to'],
-                        'type':'answer',
-                        'answer':data['answer']
+                        'type': 'answer',
+                        'answer': data['answer']
                     }
                     print data['from'], "send answer to", data['to']
                     connections[data['to']].send_data(json.dumps(answer))
@@ -71,24 +75,25 @@ class WebSocket(Protocol):
                     pass
                 elif data['type'] == 'connection':
                     username = data['username']
-                    if (not connections.has_key(username)) and len(connections) == 2:
+                    if (username not in connections) and len(connections) == 2:
                         error = {
                             'type': 'error',
                             'message': '暂时支持两人视频',
-                            'username':'WebSocket Server'
+                            'username': 'WebSocket Server'
                         }
                         self.send_data(json.dumps(error))
                         return
                     connections[username] = self
-                    self.send_data(json.dumps({'type':'message', 'message':'连接成功', 'username':'WebSocket Server'}))
+                    self.send_data(json.dumps({'type': 'message',
+                                   'message': '连接成功', 'username': 'WebSocket Server'}))
                 print "connections:", connections
         except Exception, e:
-            print Exception,":",e
-            self.send_data(json.dumps({"type": 'error', 'message': str(e)}));
+            print Exception, ":", e
+            self.send_data(json.dumps({"type": 'error', 'message': str(e)}))
             return
 
     def connectionLost(self, reason):
-        if self.sockets.has_key(self):
+        if self in self.sockets:
             del self.sockets[self]
 
     def generate_token(self, key1, key2, key3):
@@ -97,7 +102,7 @@ class WebSocket(Protocol):
         num2 = int("".join([digit for digit in list(key2) if digit.isdigit()]))
         spaces2 = len([char for char in list(key2) if char == " "])
 
-        combined = struct.pack(">II", num1/spaces1, num2/spaces2) + key3
+        combined = struct.pack(">II", num1 / spaces1, num2 / spaces2) + key3
         return hashlib.md5(combined).digest()
 
     def generate_token_2(self, key):
@@ -145,7 +150,7 @@ class WebSocket(Protocol):
 
             i = 0
             for d in data:
-                raw_str += chr(ord(d) ^ ord(masks[i%4]))
+                raw_str += chr(ord(d) ^ ord(masks[i % 4]))
                 i += 1
         else:
             raw_str = msg.split("\xFF")[0][1:]
@@ -161,7 +166,7 @@ class WebSocket(Protocol):
 
         headers["Location"] = "ws://%s/" % headers["Host"]
 
-        if headers.has_key('Sec-WebSocket-Key1'):
+        if 'Sec-WebSocket-Key1' in headers:
             key1 = headers["Sec-WebSocket-Key1"]
             key2 = headers["Sec-WebSocket-Key2"]
             key3 = data[:8]
@@ -174,7 +179,7 @@ Upgrade: WebSocket\r\n\
 Connection: Upgrade\r\n\
 Sec-WebSocket-Origin: %s\r\n\
 Sec-WebSocket-Location: %s\r\n\r\n\
-' %(headers['Origin'], headers['Location'])
+' % (headers['Origin'], headers['Location'])
 
             self.transport.write(handshake + token)
 
@@ -193,6 +198,7 @@ Sec-WebSocket-Accept: %s\r\n\r\n\
 
             self.sockets[self]['new_version'] = True
 
+
 class WebSocketFactory(Factory):
     def __init__(self):
         self.sockets = {}
@@ -200,8 +206,9 @@ class WebSocketFactory(Factory):
     def buildProtocol(self, addr):
         return WebSocket(self.sockets)
 
+
 def main():
-    port = 8080;
+    port = 8080
     reactor.listenTCP(port, WebSocketFactory())
     print "listen", '192.168.1.196:' + str(port)
     reactor.run()
